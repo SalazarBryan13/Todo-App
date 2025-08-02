@@ -1,0 +1,37 @@
+name: Build Todo App
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Build Docker image
+        run: |
+          docker build -t todo-app .
+      - name: Test Docker image
+        run: |
+          docker run -d --name todo-test -p 5000:5000 todo-app
+          sleep 10
+          curl -f http://localhost:5000/ || exit 1
+          docker stop todo-test
+          docker rm todo-test
+      - name: Push to Docker Hub
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          docker tag todo-app ${{ secrets.DOCKER_USERNAME }}/todo-app:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/todo-app:latest 

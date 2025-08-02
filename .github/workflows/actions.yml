@@ -1,0 +1,58 @@
+name: Todo App - Custom Actions
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'info'
+        type: choice
+        options:
+        - info
+        - test
+        - deploy
+
+jobs:
+  custom-action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Print repository info
+        if: github.event.inputs.action == 'info'
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Todo App Status: Ready"
+          echo "Database: SQLite (todos.db)"
+          echo "Port: 5000"
+      
+      - name: Run quick test
+        if: github.event.inputs.action == 'test'
+        run: |
+          python -m pytest tests/ -v
+      
+      - name: Deploy preview
+        if: github.event.inputs.action == 'deploy'
+        run: |
+          echo "Starting Todo App..."
+          python app.py &
+          sleep 5
+          curl -f http://localhost:5000/ || echo "App not responding"
+          pkill -f "python app.py"
+      
+      - name: List project files
+        run: |
+          echo "Project structure:"
+          find . -type f -name "*.py" -o -name "*.html" -o -name "*.txt" -o -name "Dockerfile" | head -10 
