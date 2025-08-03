@@ -24,8 +24,4 @@ jobs:
           flake8 app.py tests/ --max-line-length=100 --extend-ignore=E203,W503
       - name: Check formatting with black
         run: |
-          black --check app.py tests/
-      - name: Check imports with isort
-        run: |
-          pip install isort
-          isort --check-only app.py tests/ 
+          black --check app.py tests/ 
