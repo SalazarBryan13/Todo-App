@@ -1,7 +1,9 @@
-import pytest
-import sqlite3
 import os
+import sqlite3
 import sys
+
+import pytest
+
 from app import app
 
 # Add the parent directory to the path so we can import app
