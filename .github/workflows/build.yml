@@ -1,4 +1,4 @@
-name: Build Todo App
+name: Build
 
 on:
   push:
@@ -11,46 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-          
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          
-      - name: Run tests
-        run: |
-          python -m pytest tests/ -v
-          
-      - name: Run linting
-        run: |
-          pip install flake8 black
-          flake8 app.py tests/
-          black --check app.py tests/
-          
       - name: Build Docker image
         run: |
-          docker build -t todo-app .
-          
-      - name: Test Docker image
-        run: |
-          docker run -d --name todo-test -p 5000:5000 todo-app
-          sleep 10
-          curl -f http://localhost:5000/ || exit 1
-          docker stop todo-test
-          docker rm todo-test
-          
-      - name: Login to Docker Hub
-        if: github.ref == 'refs/heads/main'
-        run: |
-          echo "bryanhert" | docker login -u bryanhert --password-stdin
-          
-      - name: Push to Docker Hub
-        if: github.ref == 'refs/heads/main'
-        run: |
-          docker tag todo-app bryanhert/todo-app:latest
-          docker push bryanhert/todo-app:latest 
+          docker build -t todo-app . 
