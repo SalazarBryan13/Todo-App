@@ -42,7 +42,7 @@ def add_todo():
     conn = sqlite3.connect("todos.db")
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO todos (title, description) VALUES (?, ?)", 
+        "INSERT INTO todos (title, description) VALUES (?, ?)",
         (title, description)
     )
     conn.commit()
@@ -56,7 +56,7 @@ def toggle_todo(todo_id):
     conn = sqlite3.connect("todos.db")
     cursor = conn.cursor()
     cursor.execute(
-        "UPDATE todos SET completed = NOT completed WHERE id = ?", 
+        "UPDATE todos SET completed = NOT completed WHERE id = ?",
         (todo_id,)
     )
     conn.commit()
